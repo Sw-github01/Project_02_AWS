@@ -133,7 +133,7 @@ json 'auto';
 # FINAL TABLES
 
 songplay_table_insert = ("""
-INSERT INTO songplay (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent) 
+INSERT INTO songplay_table (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent) 
 SELECT 
     TIMESTAMP 'epoch' + (se.ts/1000 * INTERVAL '1 second'),
     se.user_id,
@@ -186,6 +186,16 @@ SELECT DISTINCT (artist_id)
 """)
 
 time_table_insert = ("""
+INSERT INTO time
+    WITH temp_time AS (SELECT TIMESTAMP 'epoch' + (ts/1000 * INTERVAL '1 second') as ts FROM stage_event)
+    SELECT DISTINCT
+    ts,
+    extract(hour from ts),
+    extract(day from ts),
+    extract(week from ts),
+    extract(year from ts),
+    extract(weekday from ts)
+    FROM temp_time
 """)
 
 # QUERY LISTS
